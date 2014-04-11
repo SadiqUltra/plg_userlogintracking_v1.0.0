@@ -141,7 +141,7 @@ class plgUserUserlogintracking extends JPlugin
 		$this->sendMail2SupperUser = $this->params->get('send_mail_supper_user') ? true : false;
 	}
 
-	public function isUserSuperUser())
+	public function isUserSuperUser()
 	{
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
