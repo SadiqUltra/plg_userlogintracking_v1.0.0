@@ -5,6 +5,6 @@ CREATE TABLE IF NOT EXISTS `#__userlogin_tracking` (
   `userid` int(11) NOT NULL,
   `username` varchar(40) NOT NULL,
   `ip` varchar(20) NOT NULL,
-  `timestamp` int(11) NOT NULL,
+  `realtime` varchar(40) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
