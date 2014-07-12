@@ -18,7 +18,7 @@ class plgUserUserlogintracking extends JPlugin
 	public $username;
 	public $userID;
 	public $IP;
-	public $realtime;
+	public $timestamp;
 	public $fromname;
 	public $mailfrom;
 	public $adminEmail;
@@ -40,7 +40,7 @@ class plgUserUserlogintracking extends JPlugin
 		$body =  'User Login Information:<br>'
 				.'Username: '.$this->username
 				.'<br>ID: '.$this->userID
-				.'<br>realtime: '.$this->realtime
+				.'<br>Timestamp: '.$this->timestamp
 				.'<br>IP: '.$this->IP;
 
 
@@ -64,8 +64,8 @@ class plgUserUserlogintracking extends JPlugin
 
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
-		$columns = array('userid', 'username', 'ip', 'realtime');
-		$values = array( $this->userID, $db->quote($this->username), $db->quote($this->IP), $this->realtime);
+		$columns = array('userid', 'username', 'ip', 'timestamp');
+		$values = array( $this->userID, $db->quote($this->username), $db->quote($this->IP), $this->timestamp);
 		$query
 		    ->insert($db->quoteName('#__userlogin_tracking'))
 		    ->columns($db->quoteName($columns))
@@ -112,8 +112,8 @@ class plgUserUserlogintracking extends JPlugin
 			$this->IP = $ip;
 
 			date_default_timezone_set('GMT');
-			$time = strftime('%Y-%m-%d %H:%M:%S');
-			$this->realtime = "'".$time."'";
+			$time = time();
+			$this->timestamp = $time;
 	}
 
 	public function onUserLogin($user, $options = array()){
