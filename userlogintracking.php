@@ -23,7 +23,7 @@ class plgUserUserlogintracking extends JPlugin
 	public $mailfrom;
 	public $adminEmail;
 	public $sendMail; 
-	public $sendMail2SupperUser;
+	public $sendMail2SuperUser;
 
 
 	function plgUserUserlogintracking(& $subject, $config) {
@@ -124,7 +124,7 @@ class plgUserUserlogintracking extends JPlugin
 		
 		$this->getCommandsParams();
 
-		if(!$this->sendMail2SupperUser){
+		if(!$this->sendMail2SuperUser){
 			if($this->isUserSuperUser()){
 				return true;
 			}
@@ -138,7 +138,7 @@ class plgUserUserlogintracking extends JPlugin
 
 	public function getCommandsParams(){
 		$this->sendMail = $this->params->get('send_mail') ? true : false;
-		$this->sendMail2SupperUser = $this->params->get('send_mail_supper_user') ? true : false;
+		$this->sendMail2SuperUser = $this->params->get('send_mail_supper_user') ? true : false;
 	}
 
 	public function isUserSuperUser()
