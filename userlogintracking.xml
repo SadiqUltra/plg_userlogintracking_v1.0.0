@@ -44,6 +44,7 @@
 					default="1"
 					description="PLG_USER_USERLOGINTRACKING_MAIL_DEC"
 					label="PLG_USER_USERLOGINTRACKING_MAIL_LABEL"
+					class="btn-group btn-group-yesno"
 					>
 					<option value="1">JON</option>
 					<option value="0">JOFF</option>
@@ -53,6 +54,7 @@
 					default="0"
 					description="PLG_USER_USERLOGINTRACKING_MAIL_SUPPER_USER_DEC"
 					label="PLG_USER_USERLOGINTRACKING_MAIL_SUPPER_USER_LABEL"
+					class="btn-group btn-group-yesno"
 					>
 					<option value="1">JON</option>
 					<option value="0">JOFF</option>
