@@ -64,6 +64,10 @@ class plgUserUserlogintracking extends JPlugin
 
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
+
+		//in case a user exists in LDAP directory but not in Joomla
+                if ( !isset($this->userID) || $this->userID < ' ' ) return false;
+
 		$columns = array('userid', 'username', 'ip', 'timestamp');
 		$values = array( $this->userID, $db->quote($this->username), $db->quote($this->IP), $this->timestamp);
 		$query
