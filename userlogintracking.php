@@ -61,19 +61,13 @@ class plgUserUserlogintracking extends JPlugin
 	 */
 	public $sendMail2SuperUser;
 
-
 	/**
-	 * plgUserUserlogintracking constructor.
+	 * Affects constructor behavior. If true, language files will be loaded automatically.
 	 *
-	 * @param $subject
-	 * @param $config
+	 * @var    boolean
+	 * @since  3.1
 	 */
-	function plgUserUserlogintracking(& $subject, $config)
-	{
-		parent::__construct($subject, $config);
-		$this->loadLanguage();
-	}
-
+	protected $autoloadLanguage = true;
 
 	/**
 	 * @return bool
