@@ -8,8 +8,6 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.plugin.plugin');
-
 /**
  * Class plgUserUserlogintracking
  */
@@ -68,6 +66,36 @@ class plgUserUserlogintracking extends JPlugin
 	 * @since  3.1
 	 */
 	protected $autoloadLanguage = true;
+
+	/**
+	 * This method should handle any login logic and report back to the subject
+	 *
+	 * @param   array  $user     Holds the user data
+	 * @param   array  $options  Array holding options (remember, autoregister, group)
+	 *
+	 * @return  boolean  True on success
+	 *
+	 * @since   1.5
+	 */
+	public function onUserLogin($user, $options = array())
+	{
+		$this->username = $user['username'];
+		$this->userID   = JUserHelper::getUserId($user['username']);
+
+		$this->getCommandsParams();
+
+		if (!$this->sendMail2SuperUser)
+		{
+			if ($this->isUserSuperUser())
+			{
+				return true;
+			}
+		}
+
+		$this->storeInDatabase();
+
+		return true;
+	}
 
 	/**
 	 * @return bool
@@ -177,34 +205,6 @@ class plgUserUserlogintracking extends JPlugin
 		date_default_timezone_set('GMT');
 		$time            = time();
 		$this->timestamp = $time;
-	}
-
-	/**
-	 * @param       $user
-	 * @param array $options
-	 *
-	 * @return bool
-	 */
-	public function onUserLogin($user, $options = array())
-	{
-		jimport('joomla.user.helper');
-		$mainframe      = JFactory::getApplication();
-		$this->username = $user['username'];
-		$this->userID   = JUserHelper::getUserId($user['username']);
-
-		$this->getCommandsParams();
-
-		if (!$this->sendMail2SuperUser)
-		{
-			if ($this->isUserSuperUser())
-			{
-				return true;
-			}
-		}
-
-		$this->storeInDatabase();
-
-		return true;
 	}
 
 
