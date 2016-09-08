@@ -21,7 +21,6 @@
 	</uninstall>
 	<files>
 		<filename plugin="userlogintracking">userlogintracking.php</filename>
-		<filename>index.html</filename>
 		<folder>sql</folder>
 		<folder>language</folder>
 	</files>
