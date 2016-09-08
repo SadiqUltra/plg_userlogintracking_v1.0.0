@@ -1,8 +1,6 @@
 <?php
-
 /**
- * @package       Plugin User Login Traking for Joomla! 2.5
- * @version       $Id: mod_XYZ.php 599 2010-03-20 23:26:33Z you $
+ * @package       Plugin User Login Traking for Joomla! 3.6
  * @author        A. S. M. Sadiqul Islam
  * @copyright (C) 2014- A. S. M. Sadiqul Islam
  * @license       GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -12,20 +10,64 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.plugin.plugin');
 
+/**
+ * Class plgUserUserlogintracking
+ */
 class plgUserUserlogintracking extends JPlugin
 {
 
+	/**
+	 * @var
+	 */
 	public $username;
+
+	/**
+	 * @var
+	 */
 	public $userID;
+
+	/**
+	 * @var
+	 */
 	public $IP;
+
+	/**
+	 * @var
+	 */
 	public $timestamp;
+
+	/**
+	 * @var
+	 */
 	public $fromname;
+
+	/**
+	 * @var
+	 */
 	public $mailfrom;
+
+	/**
+	 * @var
+	 */
 	public $adminEmail;
+
+	/**
+	 * @var
+	 */
 	public $sendMail;
+
+	/**
+	 * @var
+	 */
 	public $sendMail2SuperUser;
 
 
+	/**
+	 * plgUserUserlogintracking constructor.
+	 *
+	 * @param $subject
+	 * @param $config
+	 */
 	function plgUserUserlogintracking(& $subject, $config)
 	{
 		parent::__construct($subject, $config);
@@ -33,6 +75,9 @@ class plgUserUserlogintracking extends JPlugin
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function sendMail()
 	{
 		if (!$this->sendMail)
@@ -65,6 +110,9 @@ class plgUserUserlogintracking extends JPlugin
 		}
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function storeInDatabase()
 	{
 		$this->getData();
@@ -103,6 +151,9 @@ class plgUserUserlogintracking extends JPlugin
 		}
 	}
 
+	/**
+	 *
+	 */
 	public function getData()
 	{
 
@@ -134,6 +185,12 @@ class plgUserUserlogintracking extends JPlugin
 		$this->timestamp = $time;
 	}
 
+	/**
+	 * @param       $user
+	 * @param array $options
+	 *
+	 * @return bool
+	 */
 	public function onUserLogin($user, $options = array())
 	{
 		jimport('joomla.user.helper');
@@ -157,12 +214,18 @@ class plgUserUserlogintracking extends JPlugin
 	}
 
 
+	/**
+	 *
+	 */
 	public function getCommandsParams()
 	{
 		$this->sendMail           = $this->params->get('send_mail', 1) ? true : false;
 		$this->sendMail2SuperUser = $this->params->get('send_mail_supper_user') ? true : false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function isUserSuperUser()
 	{
 		$db    = JFactory::getDbo();
