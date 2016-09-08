@@ -48,7 +48,7 @@ class plgUserUserlogintracking extends JPlugin
 	 */
 	public function onUserAfterLogin($options)
 	{
-		if (!$this->params->get('track_superuser') && $options['user']->isRoot)
+		if (!$this->params->get('track_superuser') && $options['user']->get('isRoot'))
 		{
 			return;
 		}
@@ -59,16 +59,16 @@ class plgUserUserlogintracking extends JPlugin
 		$data['timestamp'] = JFactory::getDate()->getTimestamp();
 		$data['userid']    = $options['user']->id;
 		$data['username']  = $options['user']->username;
-		$data['ip']        = $jinput->server->get('HTTP_CLIENT_IP');
+		$data['ip']        = $jinput->server->getString('HTTP_CLIENT_IP');
 
 		if (!$data['ip'])
 		{
-			$data['ip'] = $jinput->server->get('HTTP_X_FORWARDED_FOR');
+			$data['ip'] = $jinput->server->getString('HTTP_X_FORWARDED_FOR');
 		}
 
 		if (!$data['ip'])
 		{
-			$data['ip'] = $jinput->server->get('REMOTE_ADDR');
+			$data['ip'] = $jinput->server->getString('REMOTE_ADDR');
 		}
 
 		if ($this->storeInDatabase($data))
@@ -91,11 +91,11 @@ class plgUserUserlogintracking extends JPlugin
 	{
 		$query   = $this->db->getQuery(true);
 		$columns = array('userid', 'username', 'ip', 'timestamp');
-		$values  = array($data['userid'], $data['username'], $data['ip'], $data['timestamp']);
+		$values  = $this->db->quote(array($data['userid'], $data['username'], $data['ip'], $data['timestamp']));
 		$query
 			->insert($this->db->quoteName('#__userlogin_tracking'))
 			->columns($this->db->quoteName($columns))
-			->values($this->db->quote($values));
+			->values(implode(',', $values));
 
 		$this->db->setQuery($query);
 
@@ -105,6 +105,7 @@ class plgUserUserlogintracking extends JPlugin
 		}
 		catch (Exception $e)
 		{
+			throw($e);
 			// Do nothing
 			return false;
 		}
