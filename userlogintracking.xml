@@ -31,18 +31,24 @@
 					name="send_mail"
 					type="radio"
 					label="PLG_USER_USERLOGINTRACKING_MAIL_LABEL"
-					description="PLG_USER_USERLOGINTRACKING_MAIL_DEC"
+					description="PLG_USER_USERLOGINTRACKING_MAIL_DESC"
 					class="btn-group btn-group-yesno"
-					default="1"
 					>
 					<option value="1">JON</option>
 					<option value="0">JOFF</option>
 				</field>
 				<field
-					name="send_mail_supper_user"
+					name="usergroup"
+					type="usergrouplist"
+					label="PLG_USER_USERLOGINTRACKING_USERGROUP_LABEL"
+					description="PLG_USER_USERLOGINTRACKING_USERGROUP_DESC"
+					showon="send_mail:1"
+				/>
+				<field
+					name="track_superuser"
 					type="radio"
-					label="PLG_USER_USERLOGINTRACKING_MAIL_SUPPER_USER_LABEL"
-					description="PLG_USER_USERLOGINTRACKING_MAIL_SUPPER_USER_DEC"
+					label="PLG_USER_USERLOGINTRACKING_TRACK_SUPERUSER_LABEL"
+					description="PLG_USER_USERLOGINTRACKING_TRACK_SUPERUSER_DESC"
 					class="btn-group btn-group-yesno"
 					default="0"
 					>
