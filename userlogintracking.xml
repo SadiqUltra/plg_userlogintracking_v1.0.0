@@ -2,26 +2,26 @@
 <extension version="2.5" type="plugin" group="user" method="upgrade">
 
 	<name>PLG_USER_USERLOGINTRACKING_FIELD_LABEL</name>
-    <creationDate>11 April 2014</creationDate>
-    <author>A. S. M. Sadiqul Islam</author>
-    <copyright>Copyright (C) 2014- A. S. M. Sadiqul Islam</copyright>
-    <license>GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html</license>
-    <authorEmail>sadikultra@gmail.com</authorEmail>
-    <authorUrl>https://www.codester.com/user/sadiqultra</authorUrl>
+	<creationDate>11 April 2014</creationDate>
+	<author>A. S. M. Sadiqul Islam</author>
+	<copyright>Copyright (C) 2014- A. S. M. Sadiqul Islam</copyright>
+	<license>GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html</license>
+	<authorEmail>sadikultra@gmail.com</authorEmail>
+	<authorUrl>https://www.codester.com/user/sadiqultra</authorUrl>
 	<version>1.0.0</version>
 	<description>PLG_USER_USERLOGINTRACKING_FIELD_DEC</description>
-	
-    <install>
-        <sql>
-            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
-        </sql>
-    </install>
 
-    <uninstall>
-        <sql>
-            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
-        </sql>
-    </uninstall>
+	<install>
+		<sql>
+			<file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+		</sql>
+	</install>
+
+	<uninstall>
+		<sql>
+			<file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+		</sql>
+	</uninstall>
 
 	<files>
 		<filename plugin="userlogintracking">userlogintracking.php</filename>
@@ -34,7 +34,7 @@
 		<language tag="en-GB">language/en-GB/en-GB.plg_user_userlogintracking.ini</language>
 		<language tag="en-GB">language/en-GB/en-GB.plg_user_userlogintracking.sys.ini</language>
 	</languages>
-	
+
 	<config>
 		<fields name="params">
 
@@ -45,7 +45,7 @@
 					description="PLG_USER_USERLOGINTRACKING_MAIL_DEC"
 					label="PLG_USER_USERLOGINTRACKING_MAIL_LABEL"
 					class="btn-group btn-group-yesno"
-					>
+				>
 					<option value="1">JON</option>
 					<option value="0">JOFF</option>
 				</field>
@@ -55,7 +55,7 @@
 					description="PLG_USER_USERLOGINTRACKING_MAIL_SUPPER_USER_DEC"
 					label="PLG_USER_USERLOGINTRACKING_MAIL_SUPPER_USER_LABEL"
 					class="btn-group btn-group-yesno"
-					>
+				>
 					<option value="1">JON</option>
 					<option value="0">JOFF</option>
 				</field>
