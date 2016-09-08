@@ -159,7 +159,7 @@ class plgUserUserlogintracking extends JPlugin
 
 	public function getCommandsParams()
 	{
-		$this->sendMail           = $this->params->get('send_mail') ? true : false;
+		$this->sendMail           = $this->params->get('send_mail', 1) ? true : false;
 		$this->sendMail2SuperUser = $this->params->get('send_mail_supper_user') ? true : false;
 	}
 
