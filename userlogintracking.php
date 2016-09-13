@@ -1,162 +1,177 @@
 <?php
+/**
+ * @package       Plugin User Login Traking for Joomla! 3.6
+ * @author        A. S. M. Sadiqul Islam
+ * @copyright (C) 2014- A. S. M. Sadiqul Islam
+ * @license       GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ **/
 
-	/**
-	 * @package Plugin User Login Traking for Joomla! 2.5
-	 * @version $Id: mod_XYZ.php 599 2010-03-20 23:26:33Z you $
-	 * @author A. S. M. Sadiqul Islam
-	 * @copyright (C) 2014- A. S. M. Sadiqul Islam
-	 * @license GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
-	**/
+defined('_JEXEC') or die('Restricted access');
 
-defined('_JEXEC') or die( 'Restricted access' );
-
-jimport('joomla.plugin.plugin');
-
+/**
+ * Class plgUserUserlogintracking
+ */
 class plgUserUserlogintracking extends JPlugin
 {
+	/**
+	 * Database Object. Automagically assigned by parent constructor
+	 *
+	 * @var    JDatabaseDriver
+	 * @since  2.0
+	 */
+	protected $db;
 
-	public $username;
-	public $userID;
-	public $IP;
-	public $timestamp;
-	public $fromname;
-	public $mailfrom;
-	public $adminEmail;
-	public $sendMail; 
-	public $sendMail2SuperUser;
+	/**
+	 * Application. Automagically assigned by parent constructor
+	 *
+	 * @var    JApplication
+	 * @since  2.0
+	 */
+	protected $app;
 
+	/**
+	 * Affects constructor behavior. If true, language files will be loaded automatically.
+	 *
+	 * @var    boolean
+	 * @since  2.0
+	 */
+	protected $autoloadLanguage = true;
 
-	function plgUserUserlogintracking(& $subject, $config) {
-		parent::__construct($subject, $config);
-		$this->loadLanguage();
+	/**
+	 * Acting after a user is successfully logged in.
+	 *
+	 * @param   array $options Array holding options
+	 *
+	 * @return  void
+	 *
+	 * @since   2.0
+	 */
+	public function onUserAfterLogin($options)
+	{
+		if (!$this->params->get('track_superuser') && $options['user']->get('isRoot'))
+		{
+			return;
+		}
+
+		$jinput = $this->app->input;
+
+		$data              = array();
+		$data['timestamp'] = JFactory::getDate()->getTimestamp();
+		$data['userid']    = $options['user']->id;
+		$data['username']  = $options['user']->username;
+		$data['ip']        = $jinput->server->getString('HTTP_CLIENT_IP');
+
+		if (!$data['ip'])
+		{
+			$data['ip'] = $jinput->server->getString('HTTP_X_FORWARDED_FOR');
+		}
+
+		if (!$data['ip'])
+		{
+			$data['ip'] = $jinput->server->getString('REMOTE_ADDR');
+		}
+
+		if ($this->storeInDatabase($data))
+		{
+			$this->sendMail($data);
+		}
+
+		return;
 	}
 
-
-	public function sendMail() {
-		if(!$this->sendMail){
-			return true;
-		}
-		$subject = 'User Login Tracking!';
-		$body =  'User Login Information:<br>'
-				.'Username: '.$this->username
-				.'<br>ID: '.$this->userID
-				.'<br>Timestamp: '.$this->timestamp
-				.'<br>IP: '.$this->IP;
-
-
-		if ( version_compare( JVERSION, '3.0', '<' ) == 0) {
-		 	$mailer = JFactory::getMailer();
-
-			$sender = array($this->mailfrom, $this->fromname);
-			$mailer->setSender($sender);
-			$mailer->addRecipient($this->adminEmail);
-			$mailer->setSubject($subject);
-			$mailer->setBody($body);
-			$mailer->isHTML(true);
-			$mailer->send();
-		} else {
-		   	JUtility::sendMail( $this->mailfrom, $this->fromname, $this->adminEmail, $subject, $body, true);
-		}
-	}
-
-	public function storeInDatabase(){
-		$this->getData();
-
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+	/**
+	 * Stores the login data into the database
+	 *
+	 * @param   array $data Array holding data to be stored.
+	 *
+	 * @return bool
+	 * @since   1.0
+	 */
+	public function storeInDatabase($data)
+	{
+		$query   = $this->db->getQuery(true);
 		$columns = array('userid', 'username', 'ip', 'timestamp');
-		$values = array( $this->userID, $db->quote($this->username), $db->quote($this->IP), $this->timestamp);
+		$values  = $this->db->quote(array($data['userid'], $data['username'], $data['ip'], $data['timestamp']));
 		$query
-		    ->insert($db->quoteName('#__userlogin_tracking'))
-		    ->columns($db->quoteName($columns))
-		    ->values(implode(',', $values));
-		$db->setQuery($query);
+			->insert($this->db->quoteName('#__userlogin_tracking'))
+			->columns($this->db->quoteName($columns))
+			->values(implode(',', $values));
 
-		if ($db->query()){
-			$query->select($db->quoteName('email'));
-			    $query->from($db->quoteName('#__users'));
-			    $query->where($db->quoteName('name') . ' LIKE '. $db->quote('Super User'));
-			    $query->order($db->quoteName('email'));
-			$db->setQuery($query);
-			$data_sp = $db->loadObjectList();
+		$this->db->setQuery($query);
 
-			foreach ($data_sp as $i => $email) {
-				$this->adminEmail[$i] = $email->email;
-			}
-	
-			$this->sendMail();
-			return true;
-		} else {
+		try
+		{
+			$this->db->execute();
+		}
+		catch (Exception $e)
+		{
+			throw($e);
+			// Do nothing
 			return false;
 		}
-	}
-
-	public function getData(){
-
-		$mainframe = JFactory::getApplication();
-		$this->fromname = $mainframe->getCfg('fromname');
-		$this->mailfrom = $mainframe->getCfg('mailfrom');
-		
-			$http_client_ip = $_SERVER['HTTP_CLIENT_IP'];
-			$http_x_forwarded_for= $_SERVER['HTTP_X_FORWARDED_FOR'];
-			$remote_addr = $_SERVER['REMOTE_ADDR'];
-			
-			if(!empty($http_client_ip)){
-				$ip = $http_client_ip;
-			}else if(!empty($http_x_forwarded_for)){
-				$ip = $http_x_forwarded_for;
-			}else{
-				$ip = $remote_addr;
-			}
-
-			$this->IP = $ip;
-
-			date_default_timezone_set('GMT');
-			$time = time();
-			$this->timestamp = $time;
-	}
-
-	public function onUserLogin($user, $options = array()){
-		jimport('joomla.user.helper');
-		$mainframe = JFactory::getApplication();
-		$this->username = $user['username'];
-		$this->userID = JUserHelper::getUserId($user['username']);
-		
-		$this->getCommandsParams();
-
-		if(!$this->sendMail2SuperUser){
-			if($this->isUserSuperUser()){
-				return true;
-			}
-		}
-
-		$this->storeInDatabase();
 
 		return true;
 	}
 
-
-	public function getCommandsParams(){
-		$this->sendMail = $this->params->get('send_mail') ? true : false;
-		$this->sendMail2SuperUser = $this->params->get('send_mail_supper_user') ? true : false;
-	}
-
-	public function isUserSuperUser()
+	/**
+	 * Sends the Email
+	 *
+	 * @param   array $data Array holding data to be emailed.
+	 *
+	 * @return void
+	 *
+	 * @since   2.0
+	 */
+	public function sendMail($data)
 	{
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
-       		$query
-			    ->select($db->quoteName('id'))
-			    ->from($db->quoteName('#__users'))
-			    ->where($db->quoteName('name') . ' LIKE '. $db->quote('Super User'));
-		    $db->setQuery($query);	
-			     $data_sp = $db->loadObjectList();
-		 	$spId = $data_sp[0]->id;
+		if (!$this->params->get('send_mail') || !$this->params->get('usergroup'))
+		{
+			return;
+		}
 
-			if($this->userID === $spId){
-				return true;
-			}else{
-				return false;
-			}		  
-	}  
+		// Get recipients in the group
+		$recipients = JAccess::getUsersByGroup($this->params->get('usergroup'));
+
+		if ($recipients)
+		{
+			return;
+		}
+
+		$query = $this->db->getQuery(true);
+		$query->select($this->db->quoteName(array('email, name')))
+			->from('#__users')
+			->where($this->db->quoteName('sendEmail') . ' = 1')
+			->where($this->db->quoteName('id') . ' IN (' . implode(',', $recipients) . ')');
+		$this->db->setQuery($query);
+
+		$recipients = $this->db->loadObjectList();
+
+		if ($recipients)
+		{
+			return;
+		}
+
+		$subject = JText::_('PLG_USER_USERLOGINTRACKING_MAIL_SUBJECT');
+		$body    = JText::sprintf('PLG_USER_USERLOGINTRACKING_MAIL_SUBJECT',
+			$data['user']->username,
+			$data['user']->user->id,
+			$data['timestamp'],
+			$data['ip']
+		);
+
+		$mailer = JFactory::getMailer();
+
+		foreach ($recipients as $recipient)
+		{
+			$mailer->addRecipient($recipient->email, $recipient->name);
+		}
+
+		$mailer->setSender(array($this->app->get('mailfrom'), $this->app->get('fromname')));
+		$mailer->setSubject($subject);
+		$mailer->setBody($body);
+		$mailer->isHtml(true);
+		$mailer->Send();
+
+		return;
+	}
 }
